@@ -34,6 +34,18 @@ Then, run the following command:
 $ pod install
 ```
 
+## Usage
+
+### Properties
+
+- `tabBarBackgroundColor {UIColor}` - Background color of the tabbar.
+- `tabBarColor {UIColor}` - The color of the bar icon.
+- `animate {Bool}` - Indicates that card scrolling is enabled/disabled.
+
+### Events
+- `beforeTabChange` - Fires before a tab change. Return false to cancel the tabchange.
+- `tabChange` - Fires when a new tab has been activated.
+
 ## Example
 
 ```swift
@@ -47,6 +59,7 @@ class ViewController: UIViewController, FATabPanelDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Delegation
         tabPanel.shared = self
         
         view.addSubview(tabPanel)
