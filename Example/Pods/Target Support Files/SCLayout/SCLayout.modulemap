@@ -1,0 +1,6 @@
+framework module SCLayout {
+  umbrella header "SCLayout-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,18 @@
+PODS:
+  - FATabScroller (1.0.0):
+    - Font-Awesome-Swift (~> 1.6.4)
+    - SCLayout (~> 1.0.0)
+  - Font-Awesome-Swift (1.6.4)
+  - SCLayout (1.0.1)
+
+DEPENDENCIES:
+  - FATabScroller (~> 1.0.0)
+
+SPEC CHECKSUMS:
+  FATabScroller: ab7a2429a0b699909796766f0ee4310cde290297
+  Font-Awesome-Swift: 86c5ec8d1e251b834fb2b2e34cdcb1f480ade751
+  SCLayout: 07cd9b682f6d75b81edf30d3ef9a34fd0e2fdbcb
+
+PODFILE CHECKSUM: d98647c7778641691789f3642f80d32bf8c6660c
+
+COCOAPODS: 1.3.1
