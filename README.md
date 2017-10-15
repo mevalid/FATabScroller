@@ -73,48 +73,27 @@ class ViewController: UIViewController, FATabPanelDelegate {
     }
     
     func tabPanelConfig() {
-        var tabPanelItems = [FATabPanelItem]()
-        let icons: [FAType] = [.FAHome, .FATv, .FABandcamp, .FAAreaChart, .FABell, .FABook, .FALifeRing, .FAVideoCamera, .FAExchange, .FAHeart, .FAMap, .FAPodcast, .FACloud, .FADiamond]
+        let view1 = UIView(), view2 = UIView(), label1 = UILabel(), label2 = UILabel()
+
+        label1.text = "View 1"
+        label2.text = "View 2"
         
-        for i in icons {
-            let view = UIView()
-            let title = UILabel()
-            let underline = UIView()
-            
-            underline.backgroundColor = randomColor()
-            title.textColor = .black
-            title.translatesAutoresizingMaskIntoConstraints = false
-            title.text = "Panel - \(i)"
-            view.addSubview(title)
-            view.addSubview(underline)
-            
-            title.constraintWithAttribute(to: view, attribute: .centerX)
-            title.constraintWithAttribute(to: view, attribute: .centerY)
-            
-            underline.addSCConstraints { sc in
-                sc.constraintWithAttribute(to: title, attribute: .width, 20)
-                sc.constraintHeightConstant(c: 25)
-                sc.constraintWithAttribute(to: title, attribute: .topFromBottom, 5)
-                sc.constraintWithAttribute(to: title, attribute: .centerX)
-            }
-            
-            tabPanelItems.append(
-                FATabPanelItem(title: i, card: view)
-            )
+        label1.addSCConstraints { sc in
+            view1.addSubview(sc)
+            sc.constraintWithAttribute(to: view1, attribute: .center)
         }
         
-        tabPanel.items = tabPanelItems
+        label2.addSCConstraints { sc in
+            view2.addSubview(sc)
+            sc.constraintWithAttribute(to: view2, attribute: .center)
+        }
+        
+        tabPanel.items = [
+            FATabPanelItem(title: .FAHome, card: view1),
+            FATabPanelItem(title: .FAMap, card: view2)
+        ]
         tabPanel.tabBarBackgroundColor = UIColor.orange
         tabPanel.tabBarColor = UIColor.white
-    }
-    
-    private func randomColor() -> UIColor {
-        return UIColor(
-            red: CGFloat(arc4random()) / CGFloat(UInt32.max),
-            green: CGFloat(arc4random()) / CGFloat(UInt32.max),
-            blue: CGFloat(arc4random()) / CGFloat(UInt32.max),
-            alpha: 1.0
-        )
     }
     
     // MARK: FATabPanelDelegate
