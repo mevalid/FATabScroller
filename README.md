@@ -54,7 +54,12 @@ import Font_Awesome_Swift
 
 class ViewController: UIViewController, FATabPanelDelegate {
     
-    let tabPanel: FATabPanel = FATabPanel()
+    let tabPanel: FATabPanel = {
+        let v = FATabPanel()
+        v.tabBarBackgroundColor = UIColor.orange
+        v.tabBarColor = UIColor.white
+        return v
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,8 +97,6 @@ class ViewController: UIViewController, FATabPanelDelegate {
             FATabPanelItem(title: .FAHome, card: view1),
             FATabPanelItem(title: .FAMap, card: view2)
         ]
-        tabPanel.tabBarBackgroundColor = UIColor.orange
-        tabPanel.tabBarColor = UIColor.white
     }
     
     // MARK: FATabPanelDelegate
