@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "FATabScroller"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "A basic tab container."
 
   s.description  = "The FATabScroller is a completely customizable widget with set of layered pages where only one page is displayed at a time." 
