@@ -120,7 +120,7 @@ public class FATabPanel: UIView, FATabCardLayoutProtocol {
     // Layout configuration.
     private func layout() {
         
-        self.constraintFormat(format: "V:|[collection][tabBar]|", [
+        self.constraintFormat(format: "V:|[collection]-(-5)-[tabBar]|", [
             "collection": cardLayout,
             "tabBar": tabBar
             ])
@@ -133,8 +133,6 @@ public class FATabPanel: UIView, FATabCardLayoutProtocol {
     
     // FATabBar config.
     private func setTabBar() {
-        
-        setTabBarBacground()
         
         for (i, item) in items!.enumerated() {
             let tab = FATab()
@@ -158,19 +156,12 @@ public class FATabPanel: UIView, FATabCardLayoutProtocol {
             }
             
             activeTab = tab.index!
-            setTabBarBacground()
             shared?.tabChange()
         }
-    }
-    
-    // Sets the FATabBar background color.
-    private func setTabBarBacground() {
-        tabBar.backgroundColor = items?[activeTab].card.backgroundColor ?? .white
     }
     
     // MARK: FATabCardLayoutProtocol
     public func cardChange(index: Int) {
         activeTab = index
-        setTabBarBacground()
     }
 }
