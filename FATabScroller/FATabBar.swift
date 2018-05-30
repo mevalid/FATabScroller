@@ -50,7 +50,7 @@ public class FATabBar: UIView {
     
     private var contentView: UIStackView = {
         let v = UIStackView()
-        v.isLayoutMarginsRelativeArrangement = true
+        v.translatesAutoresizingMaskIntoConstraints = false
         v.axis = .horizontal
         v.distribution = .fillEqually
         return v
@@ -58,12 +58,14 @@ public class FATabBar: UIView {
     
     private let activeHolder: UIView = {
         let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
         v.layer.cornerRadius = 3
         return v
     }()
     
     private let activeHolderLabel: FALabel = {
         let v = FALabel()
+        v.translatesAutoresizingMaskIntoConstraints = false
         v.clipsToBounds = true
         v.backgroundColor = UIColor.clear
         v.textColor = UIColor.white
@@ -94,9 +96,10 @@ public class FATabBar: UIView {
     override public func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        scrollView.contentSize = CGSize(width: contentView.frame.width, height: scrollView.frame.height)
-        contentView.layoutMargins = UIEdgeInsets(top: 0, left: activeHolder.frame.maxX + 5, bottom: 0, right: 0)
+        // Set stack's width constraints with left margin
+        contentView.scLayout(.stretchWidth(activeHolder.frame.maxX + 5, 0))
         
+        // Set holder's shadow
         holderDropShadow()
     }
     
@@ -121,6 +124,10 @@ public class FATabBar: UIView {
             break
         }
         
+        // Remove stack's width constraints
+        // We will set it again on redraw
+        scrollView.removeConstraints(contentView.widthStretchConstraints!)
+        
         // Redraws rectangle bounds on orientation change.
         self.setNeedsDisplay()
     }
@@ -130,24 +137,25 @@ public class FATabBar: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = UIColor.clear
         
-        scrollView.constraintsStretch(0, 5, 0, 0)
+        scrollView.scLayout( .stretch(5, 0, 0, 0) )
         
-        contentView.addSCConstraints { sc in
-            sc.constraintsStretch()
-            sc.constraintWithAttribute(to: scrollView, attribute: .centerY)
-        }
+        contentView.scLayout([
+            .centerY(to: scrollView),
+            .stretchWidth(),
+            .stretchHeight()
+        ])
         
-        activeHolder.addSCConstraints { sc in
-            sc.constraintWithAttribute(to: activeHolderLabel, attribute: .width)
-            sc.constraintWithAttribute(to: self, attribute: .left, 10)
-            sc.constraintsStretchHeight()
-        }
+        activeHolder.scLayout([
+            .width(to: activeHolderLabel),
+            .left(to: self, 1, 10),
+            .stretchHeight()
+        ])
         
-        activeHolderLabel.addSCConstraints { sc in
-            sc.constraintsStretchHeight()
-            sc.constraintWithAttribute(to: activeHolder, attribute: .centerX)
-            sc.constraintWithAttribute(to: self, attribute: .widthFromHeight, 1, 0.85)
-        }
+        activeHolderLabel.scLayout([
+            .stretchHeight(),
+            .widthFromHeight(to: self, 0.85),
+            .centerX(to: activeHolder)
+        ])
     }
     
     private func activateTab() {
@@ -193,8 +201,14 @@ public class FATabBar: UIView {
     func addTab(tab: FATab) {
         self.labelSettings(label: tab)
         contentView.addArrangedSubview(tab)
-        tab.constraintsStretchHeight()
-        tab.constraintWithAttribute(to: self, attribute: .widthFromHeight, 1, 0.85)
+        
+        // Layout
+        tab.scLayout([
+            .stretchHeight(),
+            .widthFromHeight(to: self, 0.85)
+        ])
+        
+        // Append tab
         items.append(tab)
     }
 }

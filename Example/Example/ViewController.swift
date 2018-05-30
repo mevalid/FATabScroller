@@ -26,7 +26,11 @@ import Font_Awesome_Swift
 
 class ViewController: UIViewController, FATabPanelDelegate {
     
-    let tabPanel: FATabPanel = FATabPanel()
+    let tabPanel: FATabPanel = {
+        let v = FATabPanel()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +45,7 @@ class ViewController: UIViewController, FATabPanelDelegate {
     }
     
     func layout() {
-        tabPanel.constraintsStretch()
+        tabPanel.scLayout( .stretch() )
     }
     
     func tabPanelConfig() {
@@ -53,6 +57,10 @@ class ViewController: UIViewController, FATabPanelDelegate {
             let title = UILabel()
             let underline = UIView()
             
+            view.translatesAutoresizingMaskIntoConstraints = false
+            title.translatesAutoresizingMaskIntoConstraints = false
+            underline.translatesAutoresizingMaskIntoConstraints = false
+            
             underline.backgroundColor = randomColor()
             title.textColor = .black
             title.translatesAutoresizingMaskIntoConstraints = false
@@ -60,15 +68,15 @@ class ViewController: UIViewController, FATabPanelDelegate {
             view.addSubview(title)
             view.addSubview(underline)
             
-            title.constraintWithAttribute(to: view, attribute: .centerX)
-            title.constraintWithAttribute(to: view, attribute: .centerY)
+            // Layout
+            title.scLayout( .center(to: view) )
             
-            underline.addSCConstraints { sc in
-                sc.constraintWithAttribute(to: title, attribute: .width, 20)
-                sc.constraintHeightConstant(c: 25)
-                sc.constraintWithAttribute(to: title, attribute: .topFromBottom, 5)
-                sc.constraintWithAttribute(to: title, attribute: .centerX)
-            }
+            underline.scLayout([
+                .width(to: title, 1, 20),
+                .topFromBottom(to: title, 1, 5),
+                .centerX(to: title),
+                .constant(height: 25)
+            ])
             
             tabPanelItems.append(
                 FATabPanelItem(title: i, card: view)
@@ -99,4 +107,3 @@ class ViewController: UIViewController, FATabPanelDelegate {
         print("ontabchange event")
     }
 }
-

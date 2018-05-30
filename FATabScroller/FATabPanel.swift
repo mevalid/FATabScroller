@@ -34,7 +34,7 @@ public struct FATabPanelItem {
     }
 }
 
-public protocol FATabPanelDelegate {
+public protocol FATabPanelDelegate: class {
     /**
      * Event
      * Fires before a tab change. Return false to cancel the tabchange.
@@ -50,7 +50,7 @@ public protocol FATabPanelDelegate {
 
 public class FATabPanel: UIView, FATabCardLayoutProtocol {
     
-    public var shared: FATabPanelDelegate?
+    public weak var shared: FATabPanelDelegate?
     
     public var items: [FATabPanelItem]? {
         didSet {
@@ -58,22 +58,28 @@ public class FATabPanel: UIView, FATabCardLayoutProtocol {
         }
     }
     
-    public var cardLayout: FATabCardLayout = FATabCardLayout()
+    public var cardLayout: FATabCardLayout = {
+        let v = FATabCardLayout()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
+    }()
     
     public var tabBar: FATabBar = {
         let v = FATabBar()
+        v.translatesAutoresizingMaskIntoConstraints = false
         return v
     }()
     
     public var tabBarBackgroundColor: UIColor? {
         didSet {
             self.tabBar.tabBarBackgroundColor = tabBarBackgroundColor
+            self.backgroundColor = UIColor(color: tabBarBackgroundColor!, brightnessBy: 20)
         }
     }
     
     public var tabBarColor: UIColor? {
         didSet {
-            for item in tabBar.items {
+            tabBar.items.forEach { item in
                 item.textColor = tabBarColor
             }
         }
@@ -98,6 +104,13 @@ public class FATabPanel: UIView, FATabCardLayoutProtocol {
         return v
     }()
     
+    private var hasSafeAreaInsets: Bool {
+        if #available(iOS 11.0, tvOS 11.0, *) {
+            return UIApplication.shared.delegate?.window??.safeAreaInsets != .zero
+        }
+        return false
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -109,30 +122,41 @@ public class FATabPanel: UIView, FATabCardLayoutProtocol {
         addSubview(tabBar)
         
         tabBar.activeTab = activeTab
-        
-        layout()
     }
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public override func willMove(toSuperview newSuperview: UIView?) {
+        super.willMove(toSuperview: newSuperview)
+        layout()
+    }
+    
     // Layout configuration.
     private func layout() {
         
-        self.constraintFormat(format: "V:|[collection]-(-5)-[tabBar]|", [
-            "collection": cardLayout,
-            "tabBar": tabBar
+        self.scLayout(
+            .format(format: "V:|[collection][tabBar]-(margin)-|", [
+                "collection": cardLayout,
+                "tabBar": tabBar
+                ], [
+                    "margin": (hasSafeAreaInsets ? 20 : 0) as AnyObject
             ])
+        )
         
-        cardLayout.constraintsStretchWidth()
+        tabBar.scLayout([
+            .height(to: self, 0.08),
+            .stretchWidth()
+        ])
         
-        tabBar.constraintsStretchWidth()
-        tabBar.constraintWithAttribute(to: self, attribute: .height, 1, 0.08)
+        cardLayout.scLayout( .stretchWidth() )
     }
     
     // FATabBar config.
     private func setTabBar() {
+        
+        setTabBarBackground()
         
         for (i, item) in items!.enumerated() {
             let tab = FATab()
@@ -151,17 +175,22 @@ public class FATabPanel: UIView, FATabCardLayoutProtocol {
         
         if let tab = gesture.view as? FATab {
             
-            guard (shared?.beforeTabChange())! else {
-                return
-            }
+            guard (shared?.beforeTabChange())! else { return }
             
             activeTab = tab.index!
+            setTabBarBackground()
             shared?.tabChange()
         }
+    }
+    
+    // Sets the FATabBar background color.
+    private func setTabBarBackground() {
+        tabBar.backgroundColor = items?[activeTab].card.backgroundColor ?? .white
     }
     
     // MARK: FATabCardLayoutProtocol
     public func cardChange(index: Int) {
         activeTab = index
+        setTabBarBackground()
     }
 }

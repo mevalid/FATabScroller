@@ -23,13 +23,13 @@
 import UIKit
 import SCLayout
 
-public protocol FATabCardLayoutProtocol {
+public protocol FATabCardLayoutProtocol: class {
     func cardChange(index: Int)
 }
 
 public class FATabCardLayout: UIScrollView, UIScrollViewDelegate {
     
-    var shared: FATabCardLayoutProtocol?
+    weak var shared: FATabCardLayoutProtocol?
     
     var active: Int = 0 {
         didSet {
@@ -70,7 +70,7 @@ public class FATabCardLayout: UIScrollView, UIScrollViewDelegate {
         
         self.delegate = self
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = UIColor.clear
+        self.backgroundColor = UIColor.white
         self.showsVerticalScrollIndicator = false
         self.showsHorizontalScrollIndicator = false
         self.isPagingEnabled = false
@@ -98,15 +98,18 @@ public class FATabCardLayout: UIScrollView, UIScrollViewDelegate {
     
     // Layout configuration.
     private func layout() {
-        stack.constraintsStretch()
+        stack.scLayout( .stretch() )
     }
     
     // Add card at 'index'.
     func add(item: UIView, at: Int? = nil) {
         stack.insertArrangedSubview(item, at: at ?? stack.subviews.count)
         
-        item.constraintWithAttribute(to: self, attribute: .width)
-        item.constraintWithAttribute(to: self, attribute: .height)
+        // Layout
+        item.scLayout([
+            .width(to: self),
+            .height(to: self)
+        ])
         
         reload()
     }
@@ -121,9 +124,7 @@ public class FATabCardLayout: UIScrollView, UIScrollViewDelegate {
     }
     
     private func onActivate() {
-        guard cardWidth > 0 else {
-            return
-        }
+        guard cardWidth > 0 else { return }
         
         if animate {
             UIView.animate(withDuration: 0.3, animations: {
@@ -145,7 +146,6 @@ public class FATabCardLayout: UIScrollView, UIScrollViewDelegate {
                     card?.alpha = 1
                 })
             })
-            
         }
     }
     
